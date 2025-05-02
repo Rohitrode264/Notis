@@ -1,8 +1,9 @@
 import axios from "axios";
-import { NewsArticle } from "./gnews";
+import { NewsArticle } from "../India/gnews";
+import { config } from "../../../config/env";
 
-export const fetchCurrents = async ():Promise<NewsArticle[]>=>{
-    const apiKey=process.env.CURRENTS_API_KEY;
+export const fetchGlobalCurrents = async ():Promise<NewsArticle[]>=>{
+    const apiKey=config.currentsApiKey;
     const url=`https://api.currentsapi.services/v1/latest-news?apiKey=${apiKey}&country=IN`;
     const {data}=await axios.get(url);
     return (data.news || []).map((a:any)=>({
