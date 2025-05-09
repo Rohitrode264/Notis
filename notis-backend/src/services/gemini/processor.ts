@@ -16,10 +16,10 @@ export const summarizeAndPrioritize = async (
   articles: NewsArticle[]
 ): Promise<SummarizedArticle[]> => {
   const itemsText = articles.map((a, idx) =>
-    `${idx + 1}. Title: ${a.title}
-Description: ${a.description}
-Source: ${a.source}
-URL: ${a.url}`
+    `${idx + 1}. title: ${a.title}
+description: ${a.description}
+source: ${a.source}
+url: ${a.url}`
   ).join('\n\n');
 
   const prompt = [
@@ -46,6 +46,8 @@ URL: ${a.url}`
     '',
     '7. Return ONLY a valid JSON array, wrapped in triple backticks (```), with no extra text.',
     '',
+    '8. If the source name is not available never return undefined analyze the source link and add the source name',
+    '',
     'Each object in the JSON array must include:',
     '- title: string — the article\'s headline',
     '- summary: string — your enriched and concise summary',
@@ -68,6 +70,7 @@ URL: ${a.url}`
     }
 
     const parsed = JSON.parse(jsonMatch[1]) as SummarizedArticle[];
+    console.log(parsed);
     return parsed;
   } catch (error: any) {
     console.error('Gemini summarization/prioritization failed:', error.message);

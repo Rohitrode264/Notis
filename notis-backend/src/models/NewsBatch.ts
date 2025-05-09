@@ -1,30 +1,35 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, Schema } from "mongoose";
+import { title } from "process";
 
-const ArticleSchema= new mongoose.Schema({
-    title:String,
-    description:String,
-    url:String,
-    publishedAt:Date,
-    source:String,
-    summary:String
+const Articles = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    summary: {
+        type: String,
+        required: true
+    },
+    url: {
+        type: String,
+        required: true
+    },
+    source: {
+        type: String,
+        required: true
+    }
 });
 
-const NewsBatchSchema= new mongoose.Schema({
-    batchTime:{
-        type:String,
-        enum:['6AM', '9AM', '12PM', '3PM', '6PM', '12AM'],
-        required:true
+const NewsBatch = new Schema({
+    date: {
+        type: String,
+        default: () => new Date(new Date().setHours(0, 0, 0, 0)).toISOString().split("T")[0],
+        required: true,
     },
-    category:{
-        type:String,
-        enum:['India','Global','Current Affairs'],
-        required:true
-    },
-    createdAt:{
-        type:Date,
-        default:Date.now
-    },
-    article:[ArticleSchema]
+    India: [Articles],
+    Global: [Articles],
+    CurrentAffairs: [Articles]
 });
 
-export const NewsBatch=mongoose.model('NewsBatch',NewsBatchSchema);
+const NewsModel = mongoose.model('NewsModel', NewsBatch);
+export default NewsModel;

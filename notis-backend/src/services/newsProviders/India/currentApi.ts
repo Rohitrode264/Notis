@@ -3,8 +3,8 @@ import { NewsArticle } from "./gnews";
 import { config } from "../../../config/env";
 
 export const fetchCurrents = async ():Promise<NewsArticle[]>=>{
-    const apiKey=process.env.CURRENTS_API_KEY;
-    const url=`https://api.currentsapi.services/v1/latest-news?apiKey=${config.currentsApiKey}&country=IN`;
+    const apiKey=config.currentsApiKey;
+    const url=`https://api.currentsapi.services/v1/latest-news?apiKey=${apiKey}&country=IN`;
     const {data}=await axios.get(url);
     // console.log(data);
     return (data.news || []).map((a:any)=>({
@@ -15,5 +15,3 @@ export const fetchCurrents = async ():Promise<NewsArticle[]>=>{
         source:a.source
     }));
 };
-
-fetchCurrents();

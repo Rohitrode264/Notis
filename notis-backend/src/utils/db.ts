@@ -11,4 +11,6 @@ const connectDb=async ()=>{
     }
 }
 
+import '../scheduler/cronjobs';
+
 export default connectDb;

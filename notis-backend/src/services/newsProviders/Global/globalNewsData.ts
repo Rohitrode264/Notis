@@ -9,8 +9,8 @@ export const fetchGlobalNewsData= async ():Promise<NewsArticle[]>=>{
     // console.log(data);
     return (data.results || []).map((a:any)=>({
         title:a.title,
-        descirption:a.descirption,
-        url:a.url,
+        description:a.description,
+        url:a.source_url,
         publishedAt:a.pubDate,
         sourse:a.source_name
     }));

@@ -14,7 +14,6 @@ export const fetchGnews= async():Promise<NewsArticle[]>=>{
     const apiKey=process.env.GNEWS_API_KEY;
     const url=`https://gnews.io/api/v4/top-headlines?token=${config.gnewsApiKey}&lang=en&country=in&max=10`;
     const {data}=await axios.get(url);
-    // console.log(data);
 
     return data.articles.map((a:any)=>({
         title:a.title,
@@ -24,5 +23,3 @@ export const fetchGnews= async():Promise<NewsArticle[]>=>{
         source:a.source.name || 'Gnews'
     }));
 };
-
-fetchGnews();

@@ -12,3 +12,6 @@ export const config = {
     mongoUrl: process.env.MONGO_URL,
     port: process.env.PORT || 3000
 }; 
+
+export const BASE_URL= `http://localhost:${process.env.PORT}`;
+console.log(process.env.PORT);
