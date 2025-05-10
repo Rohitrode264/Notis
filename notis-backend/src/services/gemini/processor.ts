@@ -70,7 +70,6 @@ url: ${a.url}`
     }
 
     const parsed = JSON.parse(jsonMatch[1]) as SummarizedArticle[];
-    console.log(parsed);
     return parsed;
   } catch (error: any) {
     console.error('Gemini summarization/prioritization failed:', error.message);

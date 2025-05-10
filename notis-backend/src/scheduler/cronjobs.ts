@@ -22,4 +22,4 @@ cron.schedule('0 0 * * * *', async ()=>{
     catch(error:any){
         console.error(`Error during updating the data ${error}`);
     }
-})
+});
