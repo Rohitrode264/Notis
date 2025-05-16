@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { BASE_URL } from '../../config';
+import { BASE_URL } from '../../config/config';
 import { currentAffairsDataAtom } from '../../recoil/atoms/currentAffairsDataAtom';
 
 export const CaDataFetcher = () => {

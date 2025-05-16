@@ -2,7 +2,6 @@ import { useRecoilValue } from 'recoil';
 import { indiaDataAtom, type DataItem } from '../../recoil/atoms/indiaDataAtom';
 import { NewsDropdown } from '../cards/newCard';
 import { globalDataAtom } from '../../recoil/atoms/globalDataAtom';
-import { div } from 'framer-motion/client';
 import { currentAffairsDataAtom } from '../../recoil/atoms/currentAffairsDataAtom';
 
 

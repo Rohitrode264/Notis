@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
+dotenv.config();
+console.log(process.env.PORT)
 export const config = {
     googleApiKey: process.env.GOOGLE_API_KEY,
     gnewsApiKey: process.env.GNEWS_API_KEY,
@@ -14,4 +13,3 @@ export const config = {
 }; 
 
 export const BASE_URL= `http://localhost:${process.env.PORT}`;
-console.log(process.env.PORT);
