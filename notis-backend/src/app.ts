@@ -65,7 +65,7 @@ app.delete('/deleteCurrentBatch', async (req: Request, res: Response) => {
 
 
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, async () => {
     await connectDb();
