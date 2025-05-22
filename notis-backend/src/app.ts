@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import newsGlobeRoutes from './routes/newsGlobe.routes';
 import newsCaRoutes from './routes/newsCa.routes';
 import newsIndiaRoutes from './routes/newsIndia.routes';
+import summarizeRoutes from './routes/summarize.routes';
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -43,6 +44,7 @@ app.post('/NewsBatch', async (req: Request, res: Response) => {
 app.get('/NewsBatchForIndia',newsIndiaRoutes);
 app.get('/NewsBatchForGlobe',newsGlobeRoutes);
 app.get('/NewsBatchOfCa',newsCaRoutes);
+app.post('/summarize',summarizeRoutes);
 
 app.delete('/deleteCurrentBatch', async (req: Request, res: Response) => {
     const date = DateTime.now().setZone('Asia/Kolkata');

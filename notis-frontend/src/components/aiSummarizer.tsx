@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import { BASE_URL, GOOGLE_API_KEY } from "../config/config";
+import { BASE_URL } from "../config/config";
 import ActionButton from "./inputs/button";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const FloatingNewsSummaryButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSummaryReady, setIsSummaryReady] = useState(false);
   const [speechUtterance, setSpeechUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
   const togglePopup = () => setIsOpen((prev) => !prev);
@@ -36,77 +36,35 @@ const FloatingNewsSummaryButton = () => {
     currentAffairsData: string,
     onStreamChunk?: (textChunk: string) => void
   ): Promise<string> => {
-    if (!GOOGLE_API_KEY) throw new Error("Missing GOOGLE_API_KEY");
+    try {
+      const response = await axios.post(`${BASE_URL}/summarize`, {
+        newsIndia: indiaData,
+        newsGlobal: globalData,
+        newsCa: currentAffairsData,
+      });
 
-    const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const { summary } = response.data;
 
-    const prompt = `
-You are a news summarization assistant for a platform called Notis. I will provide you with the full set of raw news data collected from various reliable sources. Your task is to generate a concise 2-minute news summary that covers all the major highlights.
-
-Please structure the output into three distinct sections:
-
-India – Important national news, events, and developments.
-Global – Key international headlines that affect the world at large.
-Current Affairs – Time-sensitive topics including politics, science, technology, sports, economy, or major public events (both Indian and global if applicable).
-
-Guidelines:
-- Use clear and engaging language suitable for a general audience.
-- Keep the tone professional yet accessible.
-- Prioritize relevance and impact.
-- Avoid repetition or overly technical jargon.
-- Ensure the entire summary can be read aloud in about 2 minutes.
-- End the summary with a short sign-off line like:
-“That’s all for today on Notis. Stay informed, stay sharp.”
-please don't use any kind of * or # kind of things
-
-Here is the data:
-
-India News:
-${indiaData}
-
-Global News:
-${globalData}
-
-Current Affairs:
-${currentAffairsData}
-`;
-
-    const result = await model.generateContentStream({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    });
-
-    let fullText = "";
-    let buffer = "";
-    let bufferTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    const flushBuffer = () => {
-      if (buffer && onStreamChunk) {
-        onStreamChunk(buffer);
-        buffer = "";
+      if (onStreamChunk) {
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i >= summary.length) return clearInterval(interval);
+          onStreamChunk(summary[i]);
+          i++;
+        }, 5);
       }
-    };
 
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      fullText += chunkText;
-      buffer += chunkText;
-
-      if (!bufferTimeout) {
-        bufferTimeout = setTimeout(() => {
-          flushBuffer();
-          bufferTimeout = null;
-        }, 100);
-      }
+      return summary;
+    } catch (error: any) {
+      console.error("Detailed error:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.error || error.message || "Failed to fetch summary from backend");
     }
-
-    flushBuffer();  
-    return fullText;
   };
 
   const handleSummarizeClick = async () => {
     setIsLoading(true);
     setSummary("");
+    setIsSummaryReady(false);
 
     try {
       const { indiaData, globalData, currentAffairsData } = await fetchAllNewsData();
@@ -118,9 +76,11 @@ ${currentAffairsData}
       await generateNewsSummary(indiaText, globalText, caText, (chunk) => {
         setSummary((prev) => (prev || "") + chunk);
       });
-    } catch (error) {
+
+      setIsSummaryReady(true);
+    } catch (error: any) {
       console.error("Error summarizing news:", error);
-      setSummary("Failed to generate summary. Please try again later.");
+      setSummary(`Failed to generate summary: ${error.message}. Please try again later.`);
     } finally {
       setIsLoading(false);
     }
@@ -186,15 +146,16 @@ ${currentAffairsData}
             <div className="flex justify-between items-center p-4 border-b border-gray-700">
               <h3 className="text-lg font-semibold text-white">
                 Notis<span className="text-blue-500">.</span> AI
+                <p className="text-[10px] font-normal text-slate-300">
+                  Don't have enough time to read articles? <br /> Summarize and listen to them.
+                </p>
               </h3>
-              <button onClick={togglePopup} className="text-xl font-bold hover:text-red-400">
+              <button onClick={togglePopup} className="text-xl font-bold hover:text-red-400 cursor-pointer">
                 &times;
               </button>
             </div>
 
             <div className="flex-1 p-4 overflow-y-auto space-y-4 text-sm text-gray-300">
-              <p>Don’t have enough time to read articles? Summarize and listen to them.</p>
-
               {!summary && (
                 <ActionButton
                   label={isLoading ? "Summarizing..." : "Summarize News"}
@@ -209,12 +170,15 @@ ${currentAffairsData}
                   <p className={`whitespace-pre-line transition-all duration-300 ${isLoading ? "blur-sm" : "blur-0"}`}>
                     {summary}
                   </p>
-                  {!isListening && !window.speechSynthesis.paused && (
+
+                  {isSummaryReady && !isListening && !window.speechSynthesis.paused && (
                     <ActionButton label="Listen to News" onClick={readAloud} variant="success" />
                   )}
+
                   {isListening && (
                     <ActionButton label="Stop" onClick={pauseReading} variant="danger" />
                   )}
+
                   {!isListening && window.speechSynthesis.paused && (
                     <ActionButton label="Resume" onClick={resumeReading} variant="primary" />
                   )}

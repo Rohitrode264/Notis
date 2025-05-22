@@ -5,7 +5,6 @@ import { IndiaDataFetcher } from "../components/apiCalls/IndiaDataFetcher";
 import { GlobalDataFetcher } from "../components/apiCalls/GlobalDataFetcher";
 import { CaDataFetcher } from "../components/apiCalls/CaDataFetcher";
 import FloatingChatButton from "../components/aiSummarizer";
-import { GOOGLE_API_KEY } from "../config/config";
 // import FloatingChatButton from "../components/aiSummarizer";
 
 export const MainPage = () => {
