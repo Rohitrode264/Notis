@@ -15,6 +15,10 @@ app.use(cors());
 app.use(express.json());
 const router=Router();
 
+app.get('/', (req: Request, res: Response) => {
+  res.send('✅ Notis backend is live and running!');
+});
+
 app.post('/NewsBatch', async (req: Request, res: Response) => {
 
     try {
